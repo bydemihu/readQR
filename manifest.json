@@ -1,0 +1,33 @@
+{
+    "manifest_version": 3,
+    "name": "QR Code Scanner",
+    "version": "1.0",
+    "description": "Scans a QR code using the webcam and opens the link.",
+    "permissions": ["tabs"],
+    "host_permissions": ["http://*/*", "https://*/*"],
+    "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "popup.js",
+        "inject.js"
+      ]
+    }
+  ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+      }
+    },
+    "web_accessible_resources": [
+    {
+      "resources": ["jsQR.js", "popup.html", "popup.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+  }
