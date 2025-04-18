@@ -3,7 +3,7 @@
     "name": "QR Code Scanner",
     "version": "1.0",
     "description": "Scans a QR code using the webcam and opens the link.",
-    "permissions": ["tabs"],
+    "permissions": ["tabs","webNavigation"],
     "host_permissions": ["http://*/*", "https://*/*"],
     "content_scripts": [
     {
@@ -26,7 +26,7 @@
     },
     "web_accessible_resources": [
     {
-      "resources": ["jsQR.js", "popup.html", "popup.js"],
+      "resources": ["jsQR.js", "scanner.html", "popup.js"],
       "matches": ["<all_urls>"]
     }
   ]

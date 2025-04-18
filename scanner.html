@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Scanner</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body style = "background-color:#ec2566; overflow:hidden;">
+  <h2 style="font-family: Funnel Display; display: none; font-size: 24px; color:white; margin:-8px" id="scanqr">Scan QR</h2>
+  <div style="width:100%; padding-top: 6px; padding-bottom:6px;" id = "header">
+    <a href="https://utdesigncapstone25.com" target="_top">
+  <img src = "designas_logo.png" style = "width: 80%;"></img>
+    </a>
+  </div>
+  
+  <video id="video" autoplay></video>
+  <canvas id="canvas"></canvas>
+
+  <div style="display:flex; justify-content: center; align-items: center; padding:12px;">
+    <img id="collapse" src = "./arrow.png" style="cursor:pointer;"></img>
+  </div>
+
+  <script src="jsQR.js"></script>
+  <script src="popup.js"></script>
+
+  <script>
+
+  </script>
+
+
+</body>
+</html>

@@ -73,4 +73,30 @@ document.addEventListener('DOMContentLoaded', async function () {
         } // end of detect
         detect(); // initial detect
     }
+
+
+
+
+    const collapseButton = document.getElementById('collapse');
+    const scanText = document.getElementById('scanqr');
+    const header = document.getElementById('header');
+    let isCollapsed = false;
+
+    collapseButton.addEventListener('click', () => {
+        isCollapsed = !isCollapsed;
+
+        // Notify the parent page
+        parent.postMessage({ type: "collapse", collapsed: isCollapsed }, "*");
+
+        // Update internal UI if needed
+        scanText.style.display = isCollapsed ? 'block' : 'none';
+        header.style.display = isCollapsed ? 'none' : 'block';
+        canvas.style.display = isCollapsed ? 'none' : 'block';
+
+        collapseButton.style.transform = isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+
+        console.log("collapse toggled")
+    });
+
+
 })
