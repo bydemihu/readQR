@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 
                         if (code) {
                             stopCamera();
-                            
+
                             console.log("scanned a code");
                             chrome.runtime.sendMessage({ qrLink: code.data });
                 
@@ -105,28 +105,34 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     function stopCamera() {
-        if (mediaStream) {
-            mediaStream.getTracks().forEach(track => track.stop()); // Stop each track of the stream
-            mediaStream = null; // Clear the stream
-            console.log("Camera stopped");
-        }
+    if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+        video.srcObject = null; // Add this line to fully disconnect
+        console.log("Camera stopped");
     }
+}
 
     // Function to start the camera again if needed
     function startCamera() {
-        if (!mediaStream) {
-            navigator.mediaDevices.getUserMedia({ video: { width: 240, height: 240 } })
-                .then((stream) => {
-                    mediaStream = stream; // Store the stream
-                    video.srcObject = stream;
-                    console.log("Camera restarted");
-                })
-                .catch((error) => {
-                    console.error("Error accessing camera:", error.name, error.message);
-                });
-        }
+        stopCamera(); // Just in case
+        navigator.mediaDevices.getUserMedia({ video: { width: 240, height: 240 } })
+            .then((stream) => {
+                mediaStream = stream;
+                video.srcObject = stream;
+                console.log("Camera restarted");
+            })
+            .catch((error) => {
+                console.error("Error accessing camera:", error.name, error.message);
+            });
     }
 
     window.addEventListener('beforeunload', stopCamera);
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && !mediaStream) {
+            startCamera();
+        }
+    });
 
 })
