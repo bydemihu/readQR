@@ -1,6 +1,9 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.qrLink) {
+      setTimeout(() => {
         chrome.tabs.update({ url: message.qrLink });
+
+    }, 2000);
     }
 });
 

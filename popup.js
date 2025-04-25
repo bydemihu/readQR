@@ -64,11 +64,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // pause scanning for 2 seconds
                         scanPaused = true;
-                        stopCamera();
+                        //stopCamera();
 
                         setTimeout(() => {
                             scanPaused = false;
-                            startCamera();
+                            //startCamera();
                         }, 2000);
                     }
                 }
