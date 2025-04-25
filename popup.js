@@ -58,10 +58,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log("tried to scan");
                 
                         if (code) {
+                            stopCamera();
+                            
                             console.log("scanned a code");
                             chrome.runtime.sendMessage({ qrLink: code.data });
                 
                             scanPaused = true;
+                            
                             setTimeout(() => {
                                 scanPaused = false;
                             }, 2000);
@@ -124,5 +127,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
+    window.addEventListener('beforeunload', stopCamera);
 
 })
