@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     canvas.setAttribute("width", 240);
     canvas.setAttribute("height", 240);
     canvas.setAttribute("style", "transform:scale(-1, 1);");
-    var ctx = canvas.getContext("2d");
+    var ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.fillStyle = "white";
     const video = document.getElementById("video");
     let lastframe = 0;
@@ -52,24 +52,22 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // check for QR
                 if (video.readyState === video.HAVE_ENOUGH_DATA) {
-
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-                    console.log("tried to scan");
-
-                    if (code) {
-                        console.log("scanned a code");
-                        chrome.runtime.sendMessage({ qrLink: code.data });
-
-                        // pause scanning for 2 seconds
-                        scanPaused = true;
-                        //stopCamera();
-
-                        setTimeout(() => {
-                            scanPaused = false;
-                            //startCamera();
-                        }, 2000);
+                    try {
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+                        console.log("tried to scan");
+                
+                        if (code) {
+                            console.log("scanned a code");
+                            chrome.runtime.sendMessage({ qrLink: code.data });
+                
+                            scanPaused = true;
+                            setTimeout(() => {
+                                scanPaused = false;
+                            }, 2000);
+                        }
+                    } catch (error) {
+                        console.error("Error during scanning:", error);
                     }
                 }
             }
