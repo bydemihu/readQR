@@ -12,12 +12,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     let framerate = 12;
     const icon = new Image(240, 240);
     icon.src = "icon.png";
+    let mediaStream = null; // Variable to store the media stream
 
     // GET VIDEO
     if (navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ video: { width: 240, height: 240 } })
             .then((stream) => {
                 console.log('Video access granted.');
+                mediaStream = stream; // Store the media stream
                 video.srcObject = stream;  // assign stream to video elem
                 video.addEventListener("loadeddata", () => {  // wait for stream to load
                     runDetection();  // run detection and draw points
@@ -62,8 +64,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // pause scanning for 2 seconds
                         scanPaused = true;
+                        stopCamera();
+
                         setTimeout(() => {
                             scanPaused = false;
+                            startCamera();
                         }, 2000);
                     }
                 }
@@ -97,6 +102,29 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         console.log("collapse toggled")
     });
+
+    function stopCamera() {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop()); // Stop each track of the stream
+            mediaStream = null; // Clear the stream
+            console.log("Camera stopped");
+        }
+    }
+
+    // Function to start the camera again if needed
+    function startCamera() {
+        if (!mediaStream) {
+            navigator.mediaDevices.getUserMedia({ video: { width: 240, height: 240 } })
+                .then((stream) => {
+                    mediaStream = stream; // Store the stream
+                    video.srcObject = stream;
+                    console.log("Camera restarted");
+                })
+                .catch((error) => {
+                    console.error("Error accessing camera:", error.name, error.message);
+                });
+        }
+    }
 
 
 })
