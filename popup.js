@@ -15,20 +15,52 @@ document.addEventListener('DOMContentLoaded', async function () {
     let mediaStream = null; // Variable to store the media stream
 
     // GET VIDEO
-    if (navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { width: 240, height: 240 } })
-            .then((stream) => {
-                console.log('Video access granted.');
-                mediaStream = stream; // Store the media stream
-                video.srcObject = stream;  // assign stream to video elem
-                video.addEventListener("loadeddata", () => {  // wait for stream to load
-                    runDetection();  // run detection and draw points
-                });
-            })
-            .catch(function (error) {
-                console.error("Error accessing camera:", error.name, error.message);
+    // if (navigator.mediaDevices.getUserMedia) {
+    //     navigator.mediaDevices.getUserMedia({ video: { width: 240, height: 240 } })
+    //         .then((stream) => {
+    //             console.log('Video access granted.');
+    //             mediaStream = stream; // Store the media stream
+    //             video.srcObject = stream;  // assign stream to video elem
+    //             video.addEventListener("loadeddata", () => {  // wait for stream to load
+    //                 runDetection();  // run detection and draw points
+    //             });
+    //         })
+    //         .catch(function (error) {
+    //             console.error("Error accessing camera:", error.name, error.message);
+    //         });
+    // }
+
+    const preferredLabels = ["W4DS", "USB"]; // Partial or full label of your external camera
+
+navigator.mediaDevices.enumerateDevices().then(devices => {
+    const videoDevices = devices.filter(device => device.kind === "videoinput");
+    const externalCam = videoDevices.find(device =>
+        preferredLabels.some(label => device.label.includes(label))
+    );
+    if (externalCam) {
+        // Now get the stream from the desired camera
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                deviceId: { exact: externalCam.deviceId },
+                width: 240,
+                height: 240
+            }
+        }).then((stream) => {
+            console.log('Video access granted to external cam:', externalCam.label);
+            const video = document.getElementById('video');
+            video.setAttribute("width", 240);
+            video.setAttribute("height", 240);
+            video.srcObject = stream;
+            video.addEventListener("loadeddata", () => {
+                runDetection();
             });
+        }).catch(err => {
+            console.error("Could not access external camera:", err);
+        });
+    } else {
+        console.error("Desired external camera not found.");
     }
+});
 
     // RUN DETECTION ON VIDEO
     const runDetection = async () => {
@@ -127,7 +159,18 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
     }
 
-    window.addEventListener('beforeunload', stopCamera);
+    window.addEventListener("beforeunload", () => {
+        console.log("Unloading, stopping camera...");
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => {
+                track.stop();
+                console.log("Track stopped:", track.label);
+            });
+            mediaStream = null;
+            video.srcObject = null;
+            console.log("Camera fully disconnected");
+        }
+    });
 
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible' && !mediaStream) {
